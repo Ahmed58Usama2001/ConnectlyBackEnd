@@ -1,0 +1,6 @@
+@Connectly.API_HostAddress = http://localhost:5286
+
+GET {{Connectly.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

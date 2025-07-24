@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	  <PackageReference Include="AutoMapper" Version="14.0.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.16" />
+	  <PackageReference Include="StackExchange.Redis" Version="2.8.37" />
+
+
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.4" />
+
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Connectly.Core\Connectly.Core.csproj" />
+    <ProjectReference Include="..\Connectly.Infrastructure\Connectly.Infrastructure.csproj" />
+    <ProjectReference Include="..\Connectly.Service\Connectly.Service.csproj" />
+  </ItemGroup>
+
+</Project>

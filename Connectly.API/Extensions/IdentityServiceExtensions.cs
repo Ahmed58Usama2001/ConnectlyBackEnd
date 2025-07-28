@@ -13,8 +13,7 @@ public static class IdentityServiceExtensions
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequireUppercase = true;
             options.Password.RequireLowercase = true;
-        }).AddEntityFrameworkStores<ApplicationContext>()
-        .AddDefaultTokenProviders(); ;
+        }).AddEntityFrameworkStores<ApplicationContext>();
 
         services.AddAuthentication(options =>
         {
@@ -38,24 +37,10 @@ public static class IdentityServiceExtensions
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(secretKey),
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.FromMinutes(5) // Reduced clock skew to 5 minutes
+                ClockSkew = TimeSpan.FromDays(double.Parse(configuration["JWT:AccessTokenDurationInMinutes"] ?? string.Empty))
             };
 
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
-
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
-                    {
-                        context.Token = accessToken;
-                    }
-                    return Task.CompletedTask;
-                }
-            };
-
+            
         });
 
         return services;

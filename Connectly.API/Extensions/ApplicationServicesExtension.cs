@@ -1,7 +1,4 @@
-﻿using Connectly.API.Helpers;
-using Connectly.Core.Repositories.Contracts;
-using Connectly.Infrastructure.Repositories;
-
+﻿
 namespace Connectly.API.Extensions;
 
 

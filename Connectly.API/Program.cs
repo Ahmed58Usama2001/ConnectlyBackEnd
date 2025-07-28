@@ -32,7 +32,14 @@ public class Program
         builder.Services.AddApplicationServices();
         builder.Services.AddIdentityServices(builder.Configuration);
 
+        builder.Services.AddCors();
+
         var app = builder.Build();
+
+        app.UseCors(options =>
+        {
+            options.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200");
+        });
 
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseMiddleware<JwtBlacklistMiddleware>();

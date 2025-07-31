@@ -1,10 +1,4 @@
-﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Connectly.Core.Entities;
-using Connectly.API.DTOs.AccountDtos;
+﻿
 
 namespace Connectly.API.Controllers;
 

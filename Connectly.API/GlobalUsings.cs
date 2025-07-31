@@ -19,9 +19,10 @@ global using System.ComponentModel.DataAnnotations;
 global using Microsoft.OpenApi.Models;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;
 global using Microsoft.IdentityModel.Tokens;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 global using AutoMapper;
-
+global using AutoMapper.QueryableExtensions;

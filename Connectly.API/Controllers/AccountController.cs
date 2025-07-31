@@ -1,4 +1,7 @@
-﻿namespace Connectly.API.Controllers;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+
+namespace Connectly.API.Controllers;
 
 
 public class AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
@@ -68,5 +71,26 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         await tokenBlacklistService.BlacklistTokenAsync(token);
 
         return Ok(new { message = "Logged out successfully" });
+    }
+
+    [Authorize]
+    [HttpGet("get-current-user")]
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        if (string.IsNullOrEmpty(email))
+            return Unauthorized(new ApiResponse(401));
+
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null) return Unauthorized(new ApiResponse(401));
+
+        var token = await authService.CreateAccessTokenAsync(user, userManager);
+
+        return Ok(new UserDto
+        {   Id = user.PublicId.ToString(),
+            UserName = user?.UserName ?? string.Empty,
+            Email = user?.Email ?? string.Empty,
+            Token = token
+        });
     }
 }

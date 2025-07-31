@@ -5,7 +5,7 @@ namespace Connectly.API.Controllers;
 
 
 public class AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
-    IAuthService authService, ITokenBlacklistService tokenBlacklistService) : BaseApiController
+    IAuthService authService, ITokenBlacklistService tokenBlacklistService, IMapper mapper) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -85,12 +85,10 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         if (user == null) return Unauthorized(new ApiResponse(401));
 
         var token = await authService.CreateAccessTokenAsync(user, userManager);
+        var userDto = mapper.Map<UserDto>(user);
+        userDto.Token = token;
 
-        return Ok(new UserDto
-        {   Id = user.PublicId.ToString(),
-            UserName = user?.UserName ?? string.Empty,
-            Email = user?.Email ?? string.Empty,
-            Token = token
-        });
+        return Ok(userDto);
     }
+
 }

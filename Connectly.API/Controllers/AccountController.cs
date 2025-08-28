@@ -72,7 +72,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
     [Authorize]
     [HttpGet("get-current-user")]
-    public async Task<ActionResult<UserDto>> GetCurrentUser()
+    public async Task<ActionResult<MemberDto>> GetCurrentUser()
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
         if (string.IsNullOrEmpty(email))
@@ -81,9 +81,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         var user = await userManager.FindByEmailAsync(email);
         if (user == null) return Unauthorized(new ApiResponse(401));
 
-        var token = await authService.CreateAccessTokenAsync(user, userManager);
-        var userDto = mapper.Map<UserDto>(user);
-        userDto.Token = token;
+        var userDto = mapper.Map<MemberDto>(user);
 
         return Ok(userDto);
     }

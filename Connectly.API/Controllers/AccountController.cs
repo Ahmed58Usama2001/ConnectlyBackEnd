@@ -24,6 +24,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             Id = user.PublicId.ToString(),
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
+            ImageUrl = user.ImageUrl,
             Token = token
         });
     }
@@ -47,6 +48,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             {   Id = user.PublicId.ToString(),
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
+                ImageUrl = user.ImageUrl,
                 Token = token
             });
         }

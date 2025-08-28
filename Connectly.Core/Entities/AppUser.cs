@@ -9,7 +9,7 @@ public class AppUser:IdentityUser<int>
 
     public DateOnly? DateOfBirth { get; set; }  
     public DateTime Created { get; set; } = DateTime.UtcNow; //Utc consistent time zone and the browser converts it to local time
-    public DateTime LastActive { get; set; } = DateTime.UtcNow;
+    public DateTime LastActive { get; set; } 
     public string? Gender { get; set; }
     public string? Description { get; set; }
     public string? City { get; set; }

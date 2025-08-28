@@ -53,9 +53,10 @@ public class MembersController(
 
             photosToReturn.Add(new PhotoDto()
             {
+                Id = photo.Id,
                 Url = photo.Url,
                 PublicId = photo.PublicId!,
-                AppUserId = id
+                MemberId = id
             });
 
         }

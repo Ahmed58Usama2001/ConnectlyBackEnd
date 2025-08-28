@@ -12,4 +12,6 @@ public class ApplicationContext:IdentityDbContext<AppUser, IdentityRole<int>, in
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
+
+    public DbSet<Photo> Photos { get; set; }
 }

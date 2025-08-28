@@ -1,16 +1,20 @@
-﻿
+﻿namespace Connectly.API.Controllers;
 
-namespace Connectly.API.Controllers;
-
-public class MembersController(UserManager<AppUser> userManager, IMapper mapper) : BaseApiController
+[Authorize]
+public class MembersController(
+    UserManager<AppUser> userManager,
+    IUserRepository userRepository,
+    IMapper mapper) : BaseApiController
 {
-    
+    private readonly UserManager<AppUser> _userManager = userManager;
+    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IMapper _mapper = mapper;
 
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<UserDto>>> GetMembers()
     {
-        var members = await userManager.Users
-            .ProjectTo<UserDto>(mapper.ConfigurationProvider)
+        var members = await _userManager.Users
+            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
         return Ok(members);
@@ -22,14 +26,25 @@ public class MembersController(UserManager<AppUser> userManager, IMapper mapper)
         if (!Guid.TryParse(id, out var publicId))
             return BadRequest("Invalid ID format.");
 
-        var member = await userManager.Users
+        var member = await _userManager.Users
             .Where(u => u.PublicId == publicId)
-            .ProjectTo<UserDto>(mapper.ConfigurationProvider)
+            .ProjectTo<UserDto>(_mapper.ConfigurationProvider)
             .FirstOrDefaultAsync();
 
         if (member == null)
             return NotFound();
 
         return Ok(member);
+    }
+
+    [HttpGet("{id}/photos")]
+    public async Task<ActionResult<IReadOnlyList<Photo>>> GetMemberPhotos(string id)
+    {
+        var photos = await _userRepository.GetPhotosForUserAsync(id);
+
+        if (!photos.Any())
+            return NotFound("No photos found for this user.");
+
+        return Ok(photos);
     }
 }

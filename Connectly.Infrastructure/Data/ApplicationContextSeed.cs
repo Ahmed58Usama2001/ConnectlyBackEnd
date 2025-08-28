@@ -12,9 +12,25 @@ public static class ApplicationContextSeed
 
             if (users?.Count > 0)
             {
-                await context.Users.AddRangeAsync(users);
-                await context.SaveChangesAsync();
+                foreach (var user in users)
+                {
+                    user.Photos.Add(new Photo
+                    {
+                        Url = user.ImageUrl!,
+                        AppUserId = user.Id,
+                    });
+
+                    context.Users.Add(user);
+                }
+
             }
+            else
+            {
+                Console.WriteLine("There are no users to seed");
+                return;
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

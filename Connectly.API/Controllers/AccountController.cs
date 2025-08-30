@@ -34,9 +34,9 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     {
         if (ModelState.IsValid)
         {
-            var user = await userManager.FindByEmailAsync(model.Email);
-            if (user is null)
-                return Unauthorized(new ApiResponse(401));
+            var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userPublicId))
+                return BadRequest(new ApiResponse(400));
 
             var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!result.Succeeded)
@@ -45,7 +45,8 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             var token = await authService.CreateAccessTokenAsync(user, userManager);
 
             return Ok(new UserDto
-            {   Id = user.PublicId.ToString(),
+            {
+                Id = user.PublicId.ToString(),
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
                 ImageUrl = user.ImageUrl,
@@ -76,11 +77,11 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     [HttpGet("get-current-user")]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        if (string.IsNullOrEmpty(email))
-            return Unauthorized(new ApiResponse(401));
+        var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userPublicId))
+            return BadRequest(new ApiResponse(400));
 
-        var user = await userManager.FindByEmailAsync(email);
+        var user = await userManager.FindByIdAsync(userPublicId);
         if (user == null) return Unauthorized(new ApiResponse(401));
         var token = await authService.CreateAccessTokenAsync(user, userManager);
 
@@ -94,5 +95,36 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             Token = token
         });
     }
+
+    [Authorize]
+    [HttpPut]
+    public async Task<ActionResult> UpdateUser(MemberUpdateDto updateDto)
+    {
+        var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userPublicId))
+            return BadRequest(new ApiResponse(400));
+
+        var user = await userManager.FindByIdAsync(userPublicId);
+        if (user == null)
+            return Unauthorized(new ApiResponse(401));
+
+        user.UserName = updateDto.UserName ?? user.UserName;
+        user.Description = updateDto.Description ?? user.Description;
+        user.City = updateDto.City ?? user.City;
+        user.Country = updateDto.Country ?? user.Country;
+
+
+
+        var result = await userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+            return BadRequest(new ApiResponse(400, "Failed to update user"));
+
+        return Ok(new
+        {
+            message = "User updated successfully"
+        });
+    }
+
 
 }

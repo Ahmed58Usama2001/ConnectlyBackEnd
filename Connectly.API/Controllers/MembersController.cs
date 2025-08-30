@@ -44,9 +44,6 @@ public class MembersController(
     {
         var photos = await _userRepository.GetPhotosForUserAsync(id);
 
-        if (!photos.Any())
-            return NotFound("No photos found for this user.");
-
         ICollection<PhotoDto> photosToReturn = [];
         foreach (var photo in photos)
         {

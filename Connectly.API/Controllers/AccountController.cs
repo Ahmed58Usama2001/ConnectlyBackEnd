@@ -2,7 +2,7 @@
 
 
 public class AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,
-    IAuthService authService, ITokenBlacklistService tokenBlacklistService, IMapper mapper) : BaseApiController
+    IAuthService authService, ITokenBlacklistService tokenBlacklistService) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -74,7 +74,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
     [Authorize]
     [HttpGet("get-current-user")]
-    public async Task<ActionResult<MemberDto>> GetCurrentUser()
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
         if (string.IsNullOrEmpty(email))
@@ -82,10 +82,17 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
         var user = await userManager.FindByEmailAsync(email);
         if (user == null) return Unauthorized(new ApiResponse(401));
+        var token = await authService.CreateAccessTokenAsync(user, userManager);
 
-        var userDto = mapper.Map<MemberDto>(user);
 
-        return Ok(userDto);
+        return Ok(new UserDto
+        {
+            Id = user.PublicId.ToString(),
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            ImageUrl = user.ImageUrl,
+            Token = token
+        });
     }
 
 }

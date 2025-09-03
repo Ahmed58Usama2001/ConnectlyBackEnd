@@ -79,10 +79,12 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userPublicId))
+        if (!Guid.TryParse(userPublicId, out var guidId))
             return BadRequest(new ApiResponse(400));
 
-        var user = await userManager.FindByIdAsync(userPublicId);
+        var user = await userManager.Users
+        .FirstOrDefaultAsync(u => u.PublicId == guidId);
+
         if (user == null) return Unauthorized(new ApiResponse(401));
         var token = await authService.CreateAccessTokenAsync(user, userManager);
 
@@ -101,11 +103,13 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     [HttpPut]
     public async Task<ActionResult> UpdateUser(MemberUpdateDto updateDto)
     {
-        var email = User.FindFirstValue(ClaimTypes.Email);
-        if (string.IsNullOrEmpty(email))
+        var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userPublicId, out var guidId))
             return BadRequest(new ApiResponse(400));
 
-        var user = await userManager.FindByEmailAsync(email);
+        var user = await userManager.Users
+       .FirstOrDefaultAsync(u => u.PublicId == guidId);
+
         if (user == null)
             return Unauthorized(new ApiResponse(401));
 

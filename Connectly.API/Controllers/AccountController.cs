@@ -34,9 +34,10 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     {
         if (ModelState.IsValid)
         {
-            var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userPublicId))
-                return BadRequest(new ApiResponse(400));
+
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return Unauthorized(new ApiResponse(401));
 
             var result = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
             if (!result.Succeeded)
@@ -100,11 +101,11 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     [HttpPut]
     public async Task<ActionResult> UpdateUser(MemberUpdateDto updateDto)
     {
-        var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userPublicId))
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        if (string.IsNullOrEmpty(email))
             return BadRequest(new ApiResponse(400));
 
-        var user = await userManager.FindByIdAsync(userPublicId);
+        var user = await userManager.FindByEmailAsync(email);
         if (user == null)
             return Unauthorized(new ApiResponse(401));
 
@@ -120,10 +121,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         if (!result.Succeeded)
             return BadRequest(new ApiResponse(400, "Failed to update user"));
 
-        return Ok(new
-        {
-            message = "User updated successfully"
-        });
+        return NoContent();
     }
 
 

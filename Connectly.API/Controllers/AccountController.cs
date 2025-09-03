@@ -71,7 +71,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
         await tokenBlacklistService.BlacklistTokenAsync(token);
 
-        return Ok(new { message = "Logged out successfully" });
+        return NoContent();
     }
 
     [Authorize]

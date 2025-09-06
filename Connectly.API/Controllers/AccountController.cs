@@ -132,20 +132,22 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
     [Authorize]
     [HttpPost("add-photo")]
-    public async Task<ActionResult<Photo>> AddPhoto(IFormFile file)
+    public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
     {
         var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!Guid.TryParse(userPublicId, out var guidId))
             return BadRequest(new ApiResponse(400));
 
         var user = await userManager.Users
-       .FirstOrDefaultAsync(u => u.PublicId == guidId);
+            .Include(u => u.Photos) 
+            .FirstOrDefaultAsync(u => u.PublicId == guidId);
 
         if (user == null)
             return Unauthorized(new ApiResponse(401));
 
-        var uploadPhotoResult  = await photoService.UploadPhotoAsync(file);
-        if(uploadPhotoResult.Error!= null) return BadRequest(new ApiResponse(400, uploadPhotoResult.Error.Message));
+        var uploadPhotoResult = await photoService.UploadPhotoAsync(file);
+        if (uploadPhotoResult.Error != null)
+            return BadRequest(new ApiResponse(400, uploadPhotoResult.Error.Message));
 
         var photo = new Photo
         {
@@ -155,17 +157,25 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             AppUser = user
         };
 
-        if(user.ImageUrl ==null)
+        if (string.IsNullOrEmpty(user.ImageUrl))
             user.ImageUrl = photo.Url;
 
         user.Photos.Add(photo);
 
         var result = await userManager.UpdateAsync(user);
-
         if (!result.Succeeded)
             return BadRequest(new ApiResponse(400, "Failed to update user"));
 
-        return photo;
+        var photoDto = new PhotoDto
+        {
+            Id = photo.Id,
+            PublicId = photo.PublicId,
+            Url = photo.Url,
+            MemberId = user.PublicId.ToString()
+        };
+
+        return Ok(photoDto);
     }
+
 
 }

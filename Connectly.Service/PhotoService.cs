@@ -14,6 +14,7 @@ public class PhotoService : IPhotoService
             config.Value.ApiKey,
             config.Value.ApiSecret
         );
+        _cloudinary = new Cloudinary(account);
     }
 
     public async Task<DeletionResult> DeletePhotoAsync(string publicId)
@@ -35,7 +36,6 @@ public class PhotoService : IPhotoService
             {
                 File = new FileDescription(file.FileName, stream),
                 Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
-                Folder = "user_photos"
             };
 
             uploadResult = await _cloudinary.UploadAsync(uploadParams);

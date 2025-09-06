@@ -28,6 +28,8 @@ public class Program
             return ConnectionMultiplexer.Connect(configuration);
         });
 
+        builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+
 
         builder.Services.AddApplicationServices();
         builder.Services.AddIdentityServices(builder.Configuration);

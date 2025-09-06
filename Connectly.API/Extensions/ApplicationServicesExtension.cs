@@ -9,7 +9,6 @@ public static class ApplicationServicesExtension
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
         services.AddAutoMapper(typeof(MappingProfiles));
 
         return services;

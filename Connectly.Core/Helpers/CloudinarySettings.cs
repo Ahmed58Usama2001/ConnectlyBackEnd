@@ -1,4 +1,5 @@
-﻿namespace Connectly.API.Helpers;
+﻿namespace Connectly.Core.Helpers;
+
 
 public class CloudinarySettings
 {
@@ -6,3 +7,4 @@ public class CloudinarySettings
     public required string ApiKey { get; set; }
     public required string ApiSecret { get; set; }
 }
+

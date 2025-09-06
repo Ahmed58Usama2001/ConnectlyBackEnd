@@ -1,8 +1,4 @@
 
-using Connectly.API.Extensions;
-using Connectly.API.Middlewares;
-using Microsoft.EntityFrameworkCore;
-using StackExchange.Redis;
 
 namespace Connectly.API;
 

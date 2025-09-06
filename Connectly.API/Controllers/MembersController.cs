@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Connectly.API.Controllers;
+﻿namespace Connectly.API.Controllers;
 
 [Authorize]
 public class MembersController(

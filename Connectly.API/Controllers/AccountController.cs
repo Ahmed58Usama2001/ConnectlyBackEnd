@@ -177,5 +177,31 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         return Ok(photoDto);
     }
 
+    [Authorize]
+    [HttpPut("set-main-photo/{photoId}")]
+    public async Task<ActionResult> SetMainPhoto(int photoId)
+    {
+        var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userPublicId, out var guidId))
+            return BadRequest(new ApiResponse(400));
 
+        var user = await userManager.Users
+            .Include(u => u.Photos)
+            .FirstOrDefaultAsync(u => u.PublicId == guidId);
+
+        if (user == null)
+            return Unauthorized(new ApiResponse(401));
+
+        var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo == null || user.ImageUrl == photo.Url)
+            return BadRequest("Cannot set this as main image." );
+
+        user.ImageUrl = photo.Url;
+
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return BadRequest(new ApiResponse(400, "Failed to update user main image"));
+
+        return NoContent();
+    }
 }

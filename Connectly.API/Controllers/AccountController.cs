@@ -204,4 +204,39 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
         return NoContent();
     }
+
+    [Authorize]
+    [HttpDelete("delete-photo/{photoId}")]
+    public async Task<ActionResult> DeletePhoto(int photoId)
+    {
+        var userPublicId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userPublicId, out var guidId))
+            return BadRequest(new ApiResponse(400));
+
+        var user = await userManager.Users
+            .Include(u => u.Photos)
+            .FirstOrDefaultAsync(u => u.PublicId == guidId);
+
+        if (user == null)
+            return Unauthorized(new ApiResponse(401));
+
+        var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
+        if (photo == null || user.ImageUrl == photo.Url)
+            return BadRequest("This photo cannot be deleted.");
+
+        if (!string.IsNullOrEmpty(photo.PublicId))
+        {
+            var deleteResult = await photoService.DeletePhotoAsync(photo.PublicId);
+            if (deleteResult.Error != null)
+                return BadRequest(new ApiResponse(400, deleteResult.Error.Message));
+        }
+
+        user.Photos.Remove(photo);
+
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            return BadRequest(new ApiResponse(400, "Failed to update user after photo deletion"));
+
+        return Ok();
+    }
 }

@@ -7,12 +7,16 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
     IPhotoService photoService) : BaseApiController
 {
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+    public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
     {
         var user = new AppUser
         {
             Email = registerDto.Email,
-            UserName = registerDto.Email.Split('@')[0]
+            UserName = registerDto.UserName,
+            Gender = registerDto.Gender,
+            City = registerDto.City,
+            Country = registerDto.Country,
+            DateOfBirth = registerDto.DateOfBirth,
         };
         var result = await userManager.CreateAsync(user, registerDto.Password);
 

@@ -17,4 +17,17 @@ public class RegisterDto
     [Required(ErrorMessage = "Confirm Password is required.")]
     [Compare("Password", ErrorMessage = "Password and Confirm Password do not match.")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Gender is required.")]
+    public string Gender { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "City is required.")]
+    public string City { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Country is required.")]
+    public string Country { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "DateOfBirth is required.")]
+    public DateOnly? DateOfBirth { get; set; } 
+
 }

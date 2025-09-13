@@ -1,19 +1,37 @@
 ﻿namespace Connectly.Infrastructure.Repositories;
 
-public class UserRepository(UserManager<AppUser> userManager) : IUserRepository
+public class UserRepository : IUserRepository
 {
-    public async Task<IReadOnlyList<Photo>> GetPhotosForUserAsync(string userId)
+    private readonly UserManager<AppUser> _userManager;
+
+    public UserRepository(UserManager<AppUser> userManager)
     {
-        return await userManager.Users
-     .Where(u => u.PublicId.ToString() == userId)
-     .SelectMany(u => u.Photos)
-     .ToListAsync();  //Loads only the photos of the selected user.
+        _userManager = userManager;
+    }
 
+    public async Task<IReadOnlyList<AppUser>> GetUsersWithSpecAsync(ISpecification<AppUser> spec)
+    {
+        var query = SpecificationsEvaluator<AppUser>.GetQuery(_userManager.Users, spec);
+        return await query.ToListAsync();
+    }
 
-        //    await _context.Users
-        //.Include(u => u.Photos)
-        //.FirstOrDefaultAsync(u => u.PublicId.ToString() == userId);
-        //    Loads the selected user plus their photos.
-        //}
+    public async Task<AppUser?> GetUserWithSpecAsync(ISpecification<AppUser> spec)
+    {
+        var query = SpecificationsEvaluator<AppUser>.GetQuery(_userManager.Users, spec);
+        return await query.FirstOrDefaultAsync();
+    }
+
+    public async Task<int> GetUsersCountAsync(ISpecification<AppUser> spec)
+    {
+        var query = SpecificationsEvaluator<AppUser>.GetQuery(_userManager.Users, spec);
+        return await query.CountAsync();
+    }
+
+    public async Task<IReadOnlyList<Photo>> GetPhotosForUserAsync(string userPublicId)
+    {
+        return await _userManager.Users
+            .Where(u => u.PublicId.ToString() == userPublicId)
+            .SelectMany(u => u.Photos)
+            .ToListAsync();
     }
 }

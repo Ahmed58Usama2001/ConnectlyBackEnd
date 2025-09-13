@@ -1,6 +1,6 @@
 ﻿namespace Connectly.Core.Specifications;
 
-public interface ISpecification<T> where T : BaseEntity
+public interface ISpecification<T>
 {
     public Expression<Func<T, bool>> Criteria { get; set; }
 

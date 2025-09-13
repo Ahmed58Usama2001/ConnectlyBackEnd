@@ -1,6 +1,6 @@
 ﻿namespace Connectly.Infrastructure;
 
-public class SpecificationsEvaluator<T> where T : BaseEntity
+public class SpecificationsEvaluator<T> where T : class
 {
     public static IQueryable<T> GetQuery(IQueryable<T> inputQuery, ISpecification<T> specs)
     {
@@ -17,8 +17,8 @@ public class SpecificationsEvaluator<T> where T : BaseEntity
         if (specs.IsPaginationEnabled)
             query = query.Skip(specs.Skip).Take(specs.Take);
 
-        query = specs.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
-        query = specs.IncludeNames.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
+        return specs.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
+
 
 
         return query;

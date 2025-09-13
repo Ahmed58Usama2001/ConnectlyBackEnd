@@ -1,7 +1,7 @@
 ﻿
 namespace Connectly.Core.Specifications;
 
-public class BaseSpecifications<T> : ISpecification<T> where T : BaseEntity
+public class BaseSpecifications<T> : ISpecification<T> 
 {
     public Expression<Func<T, bool>> Criteria { get; set; } = null!;
     public Expression<Func<T, object>> OrderBy { get; set; } = null!;

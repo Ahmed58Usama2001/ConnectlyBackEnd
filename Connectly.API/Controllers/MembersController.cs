@@ -10,32 +10,39 @@ public class MembersController(
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IMapper _mapper = mapper;
 
+
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<MemberDto>>> GetMembers()
+    public async Task<ActionResult<Pagination<MemberDto>>> GetMembers([FromQuery] MemberSpecificationsParams specParams)
     {
-        var members = await _userManager.Users
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .ToListAsync();
+        var spec = new MemberSpecifications(specParams);
+        var countSpec = new MemberForCountSpecifications(specParams);
 
-        return Ok(members);
+        var users = await _userRepository.GetUsersWithSpecAsync(spec);
+        var totalCount = await _userRepository.GetUsersCountAsync(countSpec);
+
+        var members = _mapper.Map<IReadOnlyList<MemberDto>>(users);
+
+        return Ok(new Pagination<MemberDto>(
+            specParams.PageSize,
+            specParams.PageIndex,
+            totalCount,
+            members
+        ));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<MemberDto>> GetMember(string id)
+    [HttpGet("{publicId}")]
+    public async Task<ActionResult<MemberDto>> GetMember(string publicId)
     {
-        if (!Guid.TryParse(id, out var publicId))
-            return BadRequest("Invalid ID format.");
+        var spec = new MemberSpecifications(publicId);
 
-        var member = await _userManager.Users
-            .Where(u => u.PublicId == publicId)
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync();
+        var user = await _userRepository.GetUserWithSpecAsync(spec);
 
-        if (member == null)
-            return NotFound();
+        if (user is null) return NotFound();
 
-        return Ok(member);
+        return Ok(_mapper.Map<MemberDto>(user));
     }
+
+
 
     [HttpGet("{id}/photos")]
     public async Task<ActionResult<IReadOnlyList<PhotoDto>>> GetMemberPhotos(string id)

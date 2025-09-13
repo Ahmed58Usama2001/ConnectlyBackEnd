@@ -12,8 +12,8 @@ public class MemberSpecificationsParams
     }
 
 
-    private const int maxPageSize = 12;
-    private int pageSize = 6;
+    private const int maxPageSize = 50;
+    private int pageSize = 5;
 
     public int PageSize
     {

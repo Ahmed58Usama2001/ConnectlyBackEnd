@@ -3,9 +3,7 @@
 public class MemberSpecifications : BaseSpecifications<AppUser>
 {
     public MemberSpecifications(MemberSpecificationsParams speceficationsParams)
-        : base(u =>
-            string.IsNullOrEmpty(speceficationsParams.Search)
-              || u.UserName.ToLower().Contains(speceficationsParams.Search)
+        : base(u => (string.IsNullOrEmpty(speceficationsParams.Gender) || u.Gender == speceficationsParams.Gender)
             )
 
     {

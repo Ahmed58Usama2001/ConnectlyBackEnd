@@ -4,12 +4,14 @@ public class MemberSpecificationsParams
 {
     public string? sort { get; set; }
 
-    private string? search;
-    public string? Search
-    {
-        get { return search; }
-        set { search = value?.ToLower(); }
-    }
+    public string? Gender { get; set; }
+
+    //private string? search;
+    //public string? Search
+    //{
+    //    get { return search; }
+    //    set { search = value?.ToLower(); }
+    //}
 
 
     private const int maxPageSize = 50;

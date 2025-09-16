@@ -1,13 +1,12 @@
-﻿namespace Connectly.Core.Specifications.MemberSpecs;
-
-public class MemberForCountSpecifications : BaseSpecifications<AppUser>
+﻿namespace Connectly.Core.Specifications.MemberSpecs
 {
-    public MemberForCountSpecifications(MemberSpecificationsParams speceficationsParams) :
-        base(u =>
-            string.IsNullOrEmpty(speceficationsParams.Search)
-              || u.UserName.ToLower().Contains(speceficationsParams.Search)
-            )
+    public class MemberForCountSpecifications : BaseSpecifications<AppUser>
     {
-
+        public MemberForCountSpecifications(MemberSpecificationsParams speceficationsParams)
+            : base(u =>
+                (string.IsNullOrEmpty(speceficationsParams.Gender) || u.Gender == speceficationsParams.Gender)
+            )
+        {
+        }
     }
 }

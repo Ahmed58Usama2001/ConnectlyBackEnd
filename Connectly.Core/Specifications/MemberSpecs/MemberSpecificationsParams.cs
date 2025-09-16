@@ -2,7 +2,7 @@
 
 public class MemberSpecificationsParams
 {
-    public string? sort { get; set; }
+    //public string? sort { get; set; }
 
     public string? Gender { get; set; }
 

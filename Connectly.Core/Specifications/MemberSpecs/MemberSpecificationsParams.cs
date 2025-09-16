@@ -6,6 +6,9 @@ public class MemberSpecificationsParams
 
     public string? Gender { get; set; }
 
+    public int MinAge { get; set; } = 18;
+    public int MaxAge { get; set; } = 100;
+
     //private string? search;
     //public string? Search
     //{

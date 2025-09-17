@@ -23,7 +23,7 @@ public class MemberSpecifications : BaseSpecifications<AppUser>
                     break;
 
                 default:
-                    AddOrderByDesc(p => p.Created);
+                    AddOrderByDesc(p => p.LastActive);
                     break;
             }
         }

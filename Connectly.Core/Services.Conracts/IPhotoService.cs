@@ -1,7 +1,8 @@
-﻿namespace Connectly.Core.Services.Conracts;
+﻿
+namespace Connectly.Core.Services.Conracts;
 
 public interface IPhotoService
 {
-   Task<ImageUploadResult> UploadPhotoAsync(IFormFile file);
-   Task<DeletionResult> DeletePhotoAsync(string publicId);
+    Task<PhotoUploadResult> UploadPhotoAsync(Stream fileStream, string fileName);
+    Task<PhotoDeletionResult> DeletePhotoAsync(string publicId);
 }

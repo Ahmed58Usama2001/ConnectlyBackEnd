@@ -143,20 +143,24 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             return BadRequest(new ApiResponse(400));
 
         var user = await userManager.Users
-            .Include(u => u.Photos) 
+            .Include(u => u.Photos)
             .FirstOrDefaultAsync(u => u.PublicId == guidId);
 
         if (user == null)
             return Unauthorized(new ApiResponse(401));
 
-        var uploadPhotoResult = await photoService.UploadPhotoAsync(file);
-        if (uploadPhotoResult.Error != null)
-            return BadRequest(new ApiResponse(400, uploadPhotoResult.Error.Message));
+        if (file == null || file.Length == 0)
+            return BadRequest(new ApiResponse(400, "No photo file provided"));
+
+        var uploadResult = await photoService.UploadPhotoAsync(file.OpenReadStream(), file.FileName);
+
+        if (string.IsNullOrEmpty(uploadResult.Url) || string.IsNullOrEmpty(uploadResult.PublicId))
+            return BadRequest(new ApiResponse(400, "Photo upload failed"));
 
         var photo = new Photo
         {
-            Url = uploadPhotoResult.SecureUrl.AbsoluteUri,
-            PublicId = uploadPhotoResult.PublicId,
+            Url = uploadResult.Url,
+            PublicId = uploadResult.PublicId,
             AppUserId = user.Id,
             AppUser = user
         };
@@ -181,6 +185,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         return Ok(photoDto);
     }
 
+
     [Authorize]
     [HttpPut("set-main-photo/{photoId}")]
     public async Task<ActionResult> SetMainPhoto(int photoId)
@@ -198,7 +203,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
         var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
         if (photo == null || user.ImageUrl == photo.Url)
-            return BadRequest("Cannot set this as main image." );
+            return BadRequest("Cannot set this as main image.");
 
         user.ImageUrl = photo.Url;
 
@@ -225,14 +230,18 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             return Unauthorized(new ApiResponse(401));
 
         var photo = user.Photos.FirstOrDefault(p => p.Id == photoId);
-        if (photo == null || user.ImageUrl == photo.Url)
-            return BadRequest("This photo cannot be deleted.");
+        if (photo == null)
+            return NotFound(new ApiResponse(404, "Photo not found"));
+
+        if (user.ImageUrl == photo.Url)
+            return BadRequest(new ApiResponse(400, "Cannot delete main photo"));
 
         if (!string.IsNullOrEmpty(photo.PublicId))
         {
             var deleteResult = await photoService.DeletePhotoAsync(photo.PublicId);
-            if (deleteResult.Error != null)
-                return BadRequest(new ApiResponse(400, deleteResult.Error.Message));
+
+            if (!deleteResult.Success)
+                return BadRequest(new ApiResponse(400, "Failed to delete photo from Cloudinary"));
         }
 
         user.Photos.Remove(photo);

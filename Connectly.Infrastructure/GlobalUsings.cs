@@ -1,6 +1,7 @@
 ﻿global using Connectly.Core.Entities;
 global using Connectly.Core.Specifications;
 global using Connectly.Infrastructure.Data;
+
 global using Connectly.Core.Repositories.Contracts;
 
 global using System.Text.Json;

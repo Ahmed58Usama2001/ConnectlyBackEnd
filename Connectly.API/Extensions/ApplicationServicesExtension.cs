@@ -1,4 +1,6 @@
 ﻿
+using Connectly.Service.Photos;
+
 namespace Connectly.API.Extensions;
 
 

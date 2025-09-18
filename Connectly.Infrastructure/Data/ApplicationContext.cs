@@ -38,5 +38,6 @@ namespace Connectly.Infrastructure.Data
 
 
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<MemberLike> Likes { get; set; }
     }
 }

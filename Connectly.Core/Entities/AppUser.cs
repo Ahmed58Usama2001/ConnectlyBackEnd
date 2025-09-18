@@ -1,5 +1,7 @@
 ﻿
 
+using System.Text.Json.Serialization;
+
 namespace Connectly.Core.Entities;
 
 public class AppUser:IdentityUser<int>
@@ -16,5 +18,10 @@ public class AppUser:IdentityUser<int>
     public string? Country { get; set; }
 
     public List<Photo> Photos { get; set; } = new();
+
+    [JsonIgnore]
+    public List<MemberLike> LikedByMembers { get; set; } = [];
+    [JsonIgnore]
+    public List<MemberLike> LikedMembers { get; set; } = [];
 
 }

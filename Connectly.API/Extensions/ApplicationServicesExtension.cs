@@ -9,7 +9,7 @@ public static class ApplicationServicesExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
-
+        services.AddScoped<ILikesRepository, LikesRepository>();
         services.AddScoped<LogUserActivity>();
         services.AddScoped<IPhotoService, PhotoService>();
 

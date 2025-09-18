@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Connectly.Core.Repositories.Contracts;
+﻿namespace Connectly.Core.Repositories.Contracts;
 
 public interface ILikesRepository
 {

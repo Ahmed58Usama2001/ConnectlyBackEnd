@@ -1,7 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-
-namespace Connectly.Infrastructure.Repositories;
+﻿namespace Connectly.Infrastructure.Repositories;
 
 public class LikesRepository(ApplicationContext context
     ) : ILikesRepository

@@ -8,7 +8,7 @@ public class LikesController(ILikesRepository _likesRepository,
   
   
 
-    [HttpPost("toggle/{targetUserPublicId:guid}")]
+    [HttpPost("{targetUserPublicId:guid}")]
     public async Task<ActionResult> ToggleLike(Guid targetUserPublicId)
     {
         var sourceUser = await GetCurrentUserAsync();

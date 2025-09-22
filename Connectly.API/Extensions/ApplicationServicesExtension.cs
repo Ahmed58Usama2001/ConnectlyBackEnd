@@ -1,7 +1,4 @@
-﻿
-using Connectly.Service.Photos;
-
-namespace Connectly.API.Extensions;
+﻿namespace Connectly.API.Extensions;
 
 
 public static class ApplicationServicesExtension

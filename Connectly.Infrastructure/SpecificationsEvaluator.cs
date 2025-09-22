@@ -18,9 +18,5 @@ public class SpecificationsEvaluator<T> where T : class
             query = query.Skip(specs.Skip).Take(specs.Take);
 
         return specs.Includes.Aggregate(query, (currentQuery, includeExpression) => currentQuery.Include(includeExpression));
-
-
-
-        return query;
     }
 }

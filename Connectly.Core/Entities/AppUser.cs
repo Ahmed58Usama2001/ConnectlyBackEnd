@@ -1,6 +1,5 @@
 ﻿
 
-using System.Text.Json.Serialization;
 
 namespace Connectly.Core.Entities;
 
@@ -10,7 +9,7 @@ public class AppUser:IdentityUser<int>
     public string? ImageUrl { get; set; }
 
     public DateOnly? DateOfBirth { get; set; }  
-    public DateTime Created { get; set; } = DateTime.UtcNow; //Utc consistent time zone and the browser converts it to local time
+    public DateTime Created { get; set; } = DateTime.UtcNow; 
     public DateTime LastActive { get; set; } 
     public string? Gender { get; set; }
     public string? Description { get; set; }

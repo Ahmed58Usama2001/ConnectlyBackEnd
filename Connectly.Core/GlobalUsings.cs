@@ -1,4 +1,5 @@
 ﻿global using System.Linq.Expressions;
+global using System.Text.Json.Serialization;
 
 global using Connectly.Core.Dtos;
 global using Connectly.Core.Entities;

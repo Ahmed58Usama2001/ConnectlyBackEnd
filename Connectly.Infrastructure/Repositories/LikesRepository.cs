@@ -13,13 +13,14 @@ public class LikesRepository(ApplicationContext context
         context.Likes.Remove(like);
     }
 
-    public async Task<IReadOnlyList<int>> GetCurrentMemberLikeIds(int sourceMemberId)
+    public async Task<IReadOnlyList<Guid>> GetCurrentMemberLikeIds(int sourceMemberId)
     {
         return await context.Likes
             .Where(like => like.SourceMemberId == sourceMemberId)
-            .Select(like => like.TargetMemberId)
+            .Select(like => like.TargetMember.PublicId)  
             .ToListAsync();
     }
+
 
     public async Task<MemberLike?> GetMemberLike(int sourceMemberId, int targetMemberId)
     {
@@ -44,18 +45,22 @@ public class LikesRepository(ApplicationContext context
                     .Select(like => like.SourceMember);
                 break;
 
-            default: // mutual likes
-                var likedIds = await GetCurrentMemberLikeIds(memberId);
+            case "mutual":
+                var likedIds = await GetCurrentMemberLikeIds(memberId); 
 
                 query = context.Likes
                     .Where(like => like.TargetMemberId == memberId
-                                   && likedIds.Contains(like.SourceMemberId))
+                                   && likedIds.Contains(like.SourceMember.PublicId)) 
                     .Select(like => like.SourceMember);
                 break;
+
+            default:
+                throw new ArgumentException("Invalid predicate. Use 'liked', 'likedby', or 'mutual'.");
         }
 
         return await query.ToListAsync();
     }
+
 
 
 

@@ -9,13 +9,6 @@ public class MemberSpecificationsParams
     public int MinAge { get; set; } = 18;
     public int MaxAge { get; set; } = 100;
 
-    //private string? search;
-    //public string? Search
-    //{
-    //    get { return search; }
-    //    set { search = value?.ToLower(); }
-    //}
-
 
     private const int maxPageSize = 50;
     private int pageSize = 5;

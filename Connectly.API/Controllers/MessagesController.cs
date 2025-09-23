@@ -1,4 +1,5 @@
 ﻿using Connectly.API.DTOs.MessagesDtos;
+using Connectly.Core.Specifications.MessagesSpecs;
 
 namespace Connectly.API.Controllers;
 
@@ -32,6 +33,29 @@ public class MessagesController(IMessageRepository _messageRepository,
             return _mapper.Map<MessageDto>(message);
 
         return BadRequest("Failed to send message");
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<Pagination<MessageDto>>> GetMessagsByContainer([FromQuery] MessageSpecificationsParams specParams)
+    {
+        var publicIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var member  =await GetUserByPublicId(publicIdString!);
+        specParams.MemberId = member?.Id.ToString();
+
+        var spec = new MessageSpecifications(specParams);
+        var countSpec = new MessageForCountSpecifications(specParams);
+
+        var messages = await _messageRepository.GetMessagesWithSpecAsync(spec);
+        var totalCount = await _messageRepository.GetMessagesCountAsync(countSpec);
+
+        var messagesToReturn = _mapper.Map<IReadOnlyList<MessageDto>>(messages);
+
+        return Ok(new Pagination<MessageDto>(
+            specParams.PageSize,
+            specParams.PageIndex,
+            totalCount,
+            messagesToReturn
+        ));
     }
 
     private async Task<AppUser?> GetUserByPublicId(string publicIdString)

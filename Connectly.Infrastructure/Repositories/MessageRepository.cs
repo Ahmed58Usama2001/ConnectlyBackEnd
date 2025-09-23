@@ -1,4 +1,7 @@
 ﻿
+
+using Microsoft.AspNetCore.Identity;
+
 namespace Connectly.Infrastructure.Repositories;
 
 public class MessageRepository(ApplicationContext context) : IMessageRepository
@@ -18,9 +21,16 @@ public class MessageRepository(ApplicationContext context) : IMessageRepository
         return await context.Messages.FindAsync(messgeId);
     }
 
-    public Task<IReadOnlyList<Message>> GetMessagesWithSpecAsync()
+    public async Task<int> GetMessagesCountAsync(ISpecification<Message> spec)
+    {   
+        var query = SpecificationsEvaluator<Message>.GetQuery(context.Messages,spec);
+        return await query.CountAsync();
+    }
+
+    public async Task<IReadOnlyList<Message>> GetMessagesWithSpecAsync(ISpecification<Message> spec)
     {
-        throw new NotImplementedException();
+        var query = SpecificationsEvaluator<Message>.GetQuery(context.Messages, spec);
+        return await query.ToListAsync();
     }
 
     public Task<IReadOnlyList<Message>> GetMessageThread(Guid CurrentMemberId, Guid receipientId)

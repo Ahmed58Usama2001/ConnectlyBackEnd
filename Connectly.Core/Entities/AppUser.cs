@@ -23,4 +23,9 @@ public class AppUser:IdentityUser<int>
     [JsonIgnore]
     public List<MemberLike> LikedMembers { get; set; } = [];
 
+    [JsonIgnore]
+    public List<Message> MessagesSent { get; set; } = [];
+    [JsonIgnore]
+    public List<Message> MessagesRecieved { get; set; } = [];
+
 }

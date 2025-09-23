@@ -9,10 +9,10 @@ public class MessageSpecifications : BaseSpecifications<Message>
         AddIncludes();
 
         if (speceficationsParams.Container == "Outbox")
-            Criteria = m => m.SenderId == int.Parse(speceficationsParams.MemberId!);
+            Criteria = m => m.SenderId == int.Parse(speceficationsParams.MemberId!) && !m.SenderDeleted;
         
         else     
-            Criteria = m => m.RecipientId == int.Parse(speceficationsParams.MemberId!);
+            Criteria = m => m.RecipientId == int.Parse(speceficationsParams.MemberId!) && !m.RecipientDeleted;
 
         AddOrderByDesc(m => m.MessageSent);
 

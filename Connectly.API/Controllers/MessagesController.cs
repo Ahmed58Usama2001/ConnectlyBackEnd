@@ -58,6 +58,21 @@ public class MessagesController(IMessageRepository _messageRepository,
         ));
     }
 
+    [HttpGet("thread/{recipientId}")]
+    public async Task<ActionResult<IReadOnlyList<MessageDto>>> GetMessageThread(string recipientId)
+    {
+        var publicIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var currentMember =await GetUserByPublicId(publicIdString!);
+
+        var recipient = await GetUserByPublicId(recipientId.ToString());
+        if(recipient == null)
+            return NotFound();
+
+        var messages = await _messageRepository.GetMessageThread(currentMember!.Id, recipient.Id);
+
+        return Ok(_mapper.Map<IReadOnlyList<Message>, IReadOnlyList<MessageDto>>(messages));
+    }
+
     private async Task<AppUser?> GetUserByPublicId(string publicIdString)
     {
         if (!Guid.TryParse(publicIdString, out var publicId))

@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Connectly.Infrastructure.Repositories;
 
@@ -33,9 +31,19 @@ public class MessageRepository(ApplicationContext context) : IMessageRepository
         return await query.ToListAsync();
     }
 
-    public Task<IReadOnlyList<Message>> GetMessageThread(Guid CurrentMemberId, Guid receipientId)
+    public async Task<IReadOnlyList<Message>> GetMessageThread(int CurrentMemberId, int receipientId)
     {
-        throw new NotImplementedException();
+        await context.Messages
+            .Where(m => m.RecipientId == CurrentMemberId
+            && m.SenderId == receipientId && m.DateRead == null)
+            .ExecuteUpdateAsync(setters=>setters.SetProperty(m => m.DateRead, DateTime.UtcNow)); //changing the readDatefor the messages
+
+        return await context.Messages
+            .Where(m => (m.RecipientId == CurrentMemberId && m.SenderId == receipientId) || (m.SenderId == CurrentMemberId && m.RecipientId == receipientId))
+            .OrderBy(m=>m.MessageSent).ToListAsync();
+            
+
+
     }
 
     public async Task<bool> SaveAllAsync()

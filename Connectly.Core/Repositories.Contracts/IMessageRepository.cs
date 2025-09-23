@@ -9,7 +9,7 @@ public interface IMessageRepository
     Task<int> GetMessagesCountAsync(ISpecification<Message> spec);
     Task<IReadOnlyList<Message>> GetMessagesWithSpecAsync(ISpecification<Message> spec);
 
-    Task<IReadOnlyList<Message>> GetMessageThread(Guid CurrentMemberId, Guid receipientId);
+    Task<IReadOnlyList<Message>> GetMessageThread(int CurrentMemberId, int receipientId);
 
     Task<bool> SaveAllAsync();
 }

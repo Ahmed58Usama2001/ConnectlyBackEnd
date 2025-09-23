@@ -1,4 +1,5 @@
-﻿namespace Connectly.API.Controllers;
+﻿
+namespace Connectly.API.Controllers;
 
 
 public class AccountController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager,

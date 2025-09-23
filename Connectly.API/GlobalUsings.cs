@@ -8,6 +8,7 @@ global using Connectly.API.Extensions;
 global using Connectly.API.Middlewares;
 global using Connectly.Infrastructure.Data;
 global using Connectly.API.DTOs.AccountDtos;
+global using Connectly.API.DTOs.MembersDtos;
 global using Connectly.Core.Services.Conracts;
 global using Connectly.Infrastructure.Repositories;
 global using Connectly.Core.Repositories.Contracts;

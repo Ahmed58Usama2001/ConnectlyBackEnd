@@ -1,4 +1,4 @@
-﻿namespace Connectly.API.DTOs;
+﻿namespace Connectly.API.DTOs.MembersDtos;
 
 public class MemberDto
 {

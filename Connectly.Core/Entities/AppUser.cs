@@ -16,6 +16,9 @@ public class AppUser:IdentityUser<int>
     public string? City { get; set; }
     public string? Country { get; set; }
 
+    public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiry { get; set; }
+
     public List<Photo> Photos { get; set; } = new();
 
     [JsonIgnore]

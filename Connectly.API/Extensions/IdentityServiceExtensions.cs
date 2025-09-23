@@ -8,7 +8,7 @@ public static class IdentityServiceExtensions
         services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>();
 
         services.AddIdentity<AppUser, IdentityRole<int>>(options =>
-        {
+        {   options.User.RequireUniqueEmail = true;
             options.Password.RequiredUniqueChars = 2;
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequireUppercase = true;

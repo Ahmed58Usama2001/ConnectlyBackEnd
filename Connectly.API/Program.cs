@@ -52,8 +52,11 @@ public class Program
             try
             {
                 var context = services.GetRequiredService<ApplicationContext>();
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+
                 await context.Database.MigrateAsync();
-                await ApplicationContextSeed.SeedAsync(context);
+                await ApplicationContextSeed.SeedAsync(userManager, roleManager);
             }
             catch (Exception ex)
             {

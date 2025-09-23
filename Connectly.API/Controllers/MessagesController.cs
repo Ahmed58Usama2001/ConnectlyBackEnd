@@ -1,5 +1,4 @@
-﻿using Connectly.API.DTOs.MessagesDtos;
-using Connectly.Core.Specifications.MessagesSpecs;
+﻿
 
 namespace Connectly.API.Controllers;
 
@@ -67,6 +66,9 @@ public class MessagesController(IMessageRepository _messageRepository,
         var recipient = await GetUserByPublicId(recipientId.ToString());
         if(recipient == null)
             return NotFound();
+
+        if (currentMember!.Id == recipient.Id)
+            return BadRequest();
 
         var messages = await _messageRepository.GetMessageThread(currentMember!.Id, recipient.Id);
 

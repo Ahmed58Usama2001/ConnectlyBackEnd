@@ -1,6 +1,4 @@
-﻿using Connectly.API.DTOs.MessagesDtos;
-
-namespace Connectly.API.Helpers;
+﻿namespace Connectly.API.Helpers;
 
 public class MappingProfiles : Profile
 {

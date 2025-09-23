@@ -9,10 +9,12 @@ global using Connectly.API.Middlewares;
 global using Connectly.Infrastructure.Data;
 global using Connectly.API.DTOs.AccountDtos;
 global using Connectly.API.DTOs.MembersDtos;
+global using Connectly.API.DTOs.MessagesDtos;
 global using Connectly.Core.Services.Conracts;
 global using Connectly.Infrastructure.Repositories;
 global using Connectly.Core.Repositories.Contracts;
 global using Connectly.Core.Specifications.MemberSpecs;
+global using Connectly.Core.Specifications.MessagesSpecs;
 
 global using System.Net;
 global using System.Text;

@@ -21,16 +21,10 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
         };
 
         var result = await userManager.CreateAsync(user, registerDto.Password);
-
         if (!result.Succeeded)
             return BadRequest(new ApiResponse(400, string.Join(", ", result.Errors.Select(e => e.Description))));
 
-        if (!await userManager.IsInRoleAsync(user, "Member"))
-        {
-            var roleResult = await userManager.AddToRoleAsync(user, "Member");
-            if (!roleResult.Succeeded)
-                return BadRequest(new ApiResponse(400, "Failed to assign Member role"));
-        }
+        await userManager.AddToRoleAsync(user, "Member");
 
         var token = await authService.CreateAccessTokenAsync(user, userManager);
 

@@ -19,10 +19,18 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             Country = registerDto.Country,
             DateOfBirth = registerDto.DateOfBirth,
         };
+
         var result = await userManager.CreateAsync(user, registerDto.Password);
 
         if (!result.Succeeded)
-            return BadRequest(new ApiResponse(400));
+            return BadRequest(new ApiResponse(400, string.Join(", ", result.Errors.Select(e => e.Description))));
+
+        if (!await userManager.IsInRoleAsync(user, "Member"))
+        {
+            var roleResult = await userManager.AddToRoleAsync(user, "Member");
+            if (!roleResult.Succeeded)
+                return BadRequest(new ApiResponse(400, "Failed to assign Member role"));
+        }
 
         var token = await authService.CreateAccessTokenAsync(user, userManager);
 
@@ -35,6 +43,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             Token = token
         });
     }
+
 
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto model)

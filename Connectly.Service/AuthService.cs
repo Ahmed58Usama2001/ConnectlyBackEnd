@@ -17,7 +17,9 @@ public class AuthService(IConfiguration configuration) : IAuthService
 
         var userRoles = await userManager.GetRolesAsync(user);
         foreach (var role in userRoles)
-            authClaims.Add(new Claim(ClaimTypes.Role, role));
+        {
+            authClaims.Add(new Claim("role", role));
+        }
 
         var secretKey = Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]);
         var requiredKeyLength = 256 / 8;

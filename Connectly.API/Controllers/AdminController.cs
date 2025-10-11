@@ -6,6 +6,27 @@ namespace Connectly.API.Controllers;
 public class AdminController(UserManager<AppUser> userManager) : BaseApiController
 {
     [Authorize(Policy = "RequireAdminRole")]
+    [HttpGet("users-with-roles")]
+    public async Task<ActionResult> GetUsersWithRoles()
+    {
+        var users = await userManager.Users.ToListAsync();
+        var usersList = new List<object>();
+
+        foreach (var user in users)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+            usersList.Add(new
+            {
+                user.Id,
+                user.UserName,
+                Roles = roles
+            });
+        }
+
+        return Ok(usersList);
+    }
+
+    [Authorize(Policy = "RequireAdminRole")]
     [HttpPut("edit-roles/{userId}")]
     public async Task<ActionResult<IList<string>>> EditRoles(string userId,[FromQuery] string roles)
     {

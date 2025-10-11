@@ -17,7 +17,7 @@ public class AdminController(UserManager<AppUser> userManager) : BaseApiControll
             var roles = await userManager.GetRolesAsync(user);
             usersList.Add(new
             {
-                user.Id,
+                id=user.PublicId,
                 user.UserName,
                 user.Email,
                 Roles = roles

@@ -19,6 +19,7 @@ public class AdminController(UserManager<AppUser> userManager) : BaseApiControll
             {
                 user.Id,
                 user.UserName,
+                user.Email,
                 Roles = roles
             });
         }

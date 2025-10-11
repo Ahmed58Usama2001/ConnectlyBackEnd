@@ -28,9 +28,10 @@
                 {
                     foreach (var user in users)
                     {
-                        user.UserName = user.Email; 
+                        user.UserName = user.UserName; 
+                        user.NormalizedUserName = user.UserName.ToUpper();
+                        user.Email = user.Email;
                         user.NormalizedEmail = user.Email.ToUpper();
-                        user.NormalizedUserName = user.Email.ToUpper();
 
                         var result = await userManager.CreateAsync(user, "P@ssw0rd");
                         if (result.Succeeded)

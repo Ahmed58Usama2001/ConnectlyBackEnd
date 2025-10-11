@@ -26,7 +26,8 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
 
         await userManager.AddToRoleAsync(user, "Member");
 
-        var token = await authService.CreateAccessTokenAsync(user, userManager);
+        await SetRefreshTokenCookie(user);
+        
 
         return Ok(new UserDto
         {
@@ -34,7 +35,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             UserName = user.UserName ?? string.Empty,
             Email = user.Email ?? string.Empty,
             ImageUrl = user.ImageUrl,
-            Token = token
+            Token = await authService.CreateAccessTokenAsync(user, userManager)
         });
     }
 
@@ -53,7 +54,8 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             if (!result.Succeeded)
                 return Unauthorized(new ApiResponse(401));
 
-            var token = await authService.CreateAccessTokenAsync(user, userManager);
+
+            await SetRefreshTokenCookie(user);
 
             return Ok(new UserDto
             {
@@ -61,7 +63,7 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
                 UserName = user.UserName ?? string.Empty,
                 Email = user.Email ?? string.Empty,
                 ImageUrl = user.ImageUrl,
-                Token = token
+                Token = await authService.CreateAccessTokenAsync(user, userManager)
             });
         }
 
@@ -255,5 +257,48 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             return BadRequest(new ApiResponse(400, "Failed to update user after photo deletion"));
 
         return Ok();
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<UserDto>> RefreshToken()
+    {
+        if (!Request.Cookies.TryGetValue("refreshToken", out var refreshToken))
+            return Unauthorized(new ApiResponse(401, "No refresh token provided"));
+
+        var user = await userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && u.RefreshTokenExpiry>DateTime.UtcNow);
+
+        if (user == null || user.RefreshTokenExpiry <= DateTime.UtcNow)
+            return Unauthorized(new ApiResponse(401, "Invalid or expired refresh token"));
+
+        var newAccessToken = await authService.CreateAccessTokenAsync(user, userManager);
+        await SetRefreshTokenCookie(user);
+
+        return Ok(new UserDto
+        {
+            Id = user.PublicId.ToString(),
+            UserName = user.UserName ?? string.Empty,
+            Email = user.Email ?? string.Empty,
+            ImageUrl = user.ImageUrl,
+            Token = newAccessToken
+        });
+    } 
+
+    private async Task SetRefreshTokenCookie(AppUser user)
+    {
+        var refreshToken = authService.GenereateRefreshToken();
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+        await userManager.UpdateAsync(user);
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = user.RefreshTokenExpiry,
+            SameSite = SameSiteMode.Strict, 
+            Secure = true 
+
+        };
+
+        Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
     }
 }

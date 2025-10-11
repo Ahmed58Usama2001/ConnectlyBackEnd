@@ -35,9 +35,20 @@ public class Program
 
         var app = builder.Build();
 
+        app.Use(async (context, next) =>
+        {
+            var cookies = context.Request.Headers["Cookie"];
+            Console.WriteLine($"Cookies sent: {cookies}");
+            await next();
+        });
+
+
         app.UseCors(options =>
         {
-            options.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200");
+            options.WithOrigins("http://localhost:4200")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
         });
 
         app.UseMiddleware<ExceptionMiddleware>();

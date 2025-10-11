@@ -1,5 +1,7 @@
 ﻿
 
+using System.Security.Cryptography;
+
 namespace Connectly.Service;
 
 
@@ -39,4 +41,10 @@ public class AuthService(IConfiguration configuration) : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public string GenereateRefreshToken()
+    {
+        var randomBytes = RandomNumberGenerator.GetBytes(64);
+
+        return Convert.ToBase64String(randomBytes);
+    }
 }

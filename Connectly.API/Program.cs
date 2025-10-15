@@ -1,6 +1,7 @@
 
 
 
+
 namespace Connectly.API;
 
 public class Program
@@ -26,6 +27,7 @@ public class Program
         });
 
         builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+        builder.Services.AddSignalR();
 
 
         builder.Services.AddApplicationServices();
@@ -85,6 +87,7 @@ public class Program
         app.UseStaticFiles();
 
         app.MapControllers();
+        app.MapHub<PresenceHub>("hubs/presence");
 
         app.Run();
     }

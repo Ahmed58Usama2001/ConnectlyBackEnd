@@ -2,6 +2,7 @@
 global using Connectly.API.DTOs;
 global using Connectly.API.Errors;
 global using Connectly.API.Helpers;
+global using Connectly.API.SingalR;
 global using Connectly.Core.Entities;
 global using Connectly.Service.Photos;
 global using Connectly.API.Extensions;
@@ -24,10 +25,11 @@ global using System.ComponentModel.DataAnnotations;
 
 global using Microsoft.OpenApi.Models;
 global using Microsoft.AspNetCore.Mvc;
-global using Microsoft.AspNetCore.Identity;
-global using Microsoft.AspNetCore.Mvc.Filters;
+global using Microsoft.AspNetCore.SignalR;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Identity;
 global using Microsoft.IdentityModel.Tokens;
+global using Microsoft.AspNetCore.Mvc.Filters;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 

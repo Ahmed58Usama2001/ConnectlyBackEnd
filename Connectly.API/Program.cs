@@ -28,6 +28,7 @@ public class Program
 
         builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
         builder.Services.AddSignalR();
+        builder.Services.AddSingleton<PresenceTracker>();
 
 
         builder.Services.AddApplicationServices();

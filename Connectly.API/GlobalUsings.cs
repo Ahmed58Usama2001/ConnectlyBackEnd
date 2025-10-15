@@ -21,6 +21,7 @@ global using System.Net;
 global using System.Text;
 global using System.Text.Json;
 global using System.Security.Claims;
+global using System.Collections.Concurrent;
 global using System.ComponentModel.DataAnnotations;
 
 global using Microsoft.OpenApi.Models;

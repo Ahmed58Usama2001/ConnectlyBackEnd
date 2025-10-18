@@ -1,4 +1,5 @@
 ﻿
+using Connectly.Core.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Connectly.API.SingalR;
@@ -17,8 +18,9 @@ public class MessageHub(IMessageRepository messageRepository, UserManager<AppUse
         var currentUser = await GetUserByPublicId(GetUserId());
         var otherUser = await GetUserByPublicId(otherUserPublicId);
         var messages = await messageRepository.GetMessageThread(currentUser!.Id, otherUser!.Id);
+        var mappedMessages = mapper.Map<IReadOnlyList<Message>, IReadOnlyList<MessageDto>>(messages);
 
-        await Clients.Group(groupName).SendAsync("ReceiveMessageThread", messages);
+        await Clients.Group(groupName).SendAsync("ReceiveMessageThread", mappedMessages);
     }
 
     public async Task SendMessage(CreateMessageDto createMessageDto)

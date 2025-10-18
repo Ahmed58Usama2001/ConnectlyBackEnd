@@ -29,7 +29,7 @@ public class Program
         builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
         builder.Services.AddSignalR();
         builder.Services.AddSingleton<PresenceTracker>();
-
+        //builder.Services.AddSingleton<MessageHub>();
 
         builder.Services.AddApplicationServices();
         builder.Services.AddIdentityServices(builder.Configuration);
@@ -89,6 +89,7 @@ public class Program
 
         app.MapControllers();
         app.MapHub<PresenceHub>("hubs/presence");
+        app.MapHub<MessageHub>("hubs/messages");
 
         app.Run();
     }

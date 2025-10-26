@@ -70,6 +70,7 @@ public class Program
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
                 await context.Database.MigrateAsync();
+                await context.Connections.ExecuteDeleteAsync();
                 await ApplicationContextSeed.SeedAsync(userManager, roleManager);
             }
             catch (Exception ex)

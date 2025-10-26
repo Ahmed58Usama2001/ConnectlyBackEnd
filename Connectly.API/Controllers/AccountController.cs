@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+
 namespace Connectly.API.Controllers;
 
 
@@ -82,6 +84,12 @@ public class AccountController(SignInManager<AppUser> signInManager, UserManager
             return BadRequest(new ApiResponse(400, "Invalid token"));
 
         await tokenBlacklistService.BlacklistTokenAsync(token);
+
+        await userManager.Users.Where(u => u.PublicId.ToString() == userId)
+            .ExecuteUpdateAsync(u =>
+            u.SetProperty(x => x.RefreshToken, x => null)
+             .SetProperty(x => x.RefreshTokenExpiry, x => null)
+            );
 
         return NoContent();
     }

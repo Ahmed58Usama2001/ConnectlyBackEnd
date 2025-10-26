@@ -1,12 +1,11 @@
-﻿
-namespace Connectly.API.SingalR;
+﻿namespace Connectly.API.SingalR;
 
 public class PresenceTracker
 {
     private static readonly ConcurrentDictionary<string,
         ConcurrentDictionary<string, byte>> OnlineUsers = new();
 
-    public Task UserConnected(string userId , string connectionId)
+    public Task UserConnected(string userId, string connectionId)
     {
         var connections = OnlineUsers.GetOrAdd(userId, _ => new ConcurrentDictionary<string, byte>());
         connections.TryAdd(connectionId, 0);
@@ -17,7 +16,7 @@ public class PresenceTracker
     {
         if (OnlineUsers.TryGetValue(userId, out var connections))
         {
-            connections.TryRemove(userId, out _);
+            connections.TryRemove(connectionId, out _); // ✅ Fixed - now uses connectionId
             if (connections.IsEmpty)
             {
                 OnlineUsers.TryRemove(userId, out _);
@@ -34,7 +33,7 @@ public class PresenceTracker
 
     public static Task<List<string>> GetConnectionsForUser(string userId)
     {
-        if(OnlineUsers.TryGetValue(userId, out var connections))
+        if (OnlineUsers.TryGetValue(userId, out var connections))
         {
             return Task.FromResult(connections.Keys.ToList());
         }

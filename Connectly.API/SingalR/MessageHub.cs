@@ -1,13 +1,12 @@
 ﻿namespace Connectly.API.SingalR;
-
 [Authorize]
 public class MessageHub(IMessageRepository messageRepository, UserManager<AppUser> userManager, IMapper mapper,
-    IHubContext<PresenceHub> presenceHub):Hub
+    IHubContext<PresenceHub> presenceHub) : Hub
 {
     public override async Task OnConnectedAsync()
     {
         var httpContext = Context.GetHttpContext();
-        var otherUserPublicId = httpContext?.Request.Query["userId"].ToString()??throw new HubException("Other user not found");
+        var otherUserPublicId = httpContext?.Request.Query["userId"].ToString() ?? throw new HubException("Other user not found");
 
         var groupName = GetGroupName(GetUserId(), otherUserPublicId!);
         await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
@@ -47,13 +46,16 @@ public class MessageHub(IMessageRepository messageRepository, UserManager<AppUse
 
         if (await messageRepository.SaveAllAsync())
         {
-            await Clients.Group(groupName).SendAsync("NewMessage", mapper.Map<MessageDto>(message));
+            var messageDto = mapper.Map<MessageDto>(message);
+
+            await Clients.Group(groupName).SendAsync("NewMessage", messageDto);
+
             var connections = await PresenceTracker.GetConnectionsForUser(recipient.PublicId.ToString());
-            if(connections != null && connections.Count>0 &&!userInGroup)
-                await presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
-                    mapper.Map<MessageDto>(userInGroup));
+            if (connections != null && connections.Count > 0 && !userInGroup)
+            {
+                await presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived", messageDto);
+            }
         }
-        
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -62,12 +64,12 @@ public class MessageHub(IMessageRepository messageRepository, UserManager<AppUse
         await base.OnDisconnectedAsync(exception);
     }
 
-    private async Task<bool> AddToGroup (string groupName)
+    private async Task<bool> AddToGroup(string groupName)
     {
         var group = await messageRepository.GetMessageGroup(groupName);
         var connection = new Connection(Context.ConnectionId, GetUserId());
 
-        if(group is null)
+        if (group is null)
         {
             group = new Group(groupName);
             messageRepository.AddGroup(group);
@@ -80,7 +82,7 @@ public class MessageHub(IMessageRepository messageRepository, UserManager<AppUse
     private static string GetGroupName(string? caller, string? other)
     {
         var stringCompare = string.CompareOrdinal(caller, other) < 0;
-        return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}"; 
+        return stringCompare ? $"{caller}-{other}" : $"{other}-{caller}";
     }
 
     private string GetUserId()

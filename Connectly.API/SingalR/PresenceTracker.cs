@@ -31,4 +31,14 @@ public class PresenceTracker
         var onlineUsers = OnlineUsers.Keys.OrderBy(k => k).ToArray();
         return Task.FromResult(onlineUsers);
     }
+
+    public static Task<List<string>> GetConnectionsForUser(string userId)
+    {
+        if(OnlineUsers.TryGetValue(userId, out var connections))
+        {
+            return Task.FromResult(connections.Keys.ToList());
+        }
+
+        return Task.FromResult(new List<string>());
+    }
 }

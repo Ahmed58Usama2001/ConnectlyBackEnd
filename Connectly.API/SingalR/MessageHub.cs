@@ -1,11 +1,8 @@
-﻿
-using Connectly.Core.Entities;
-using Microsoft.AspNetCore.Identity;
-
-namespace Connectly.API.SingalR;
+﻿namespace Connectly.API.SingalR;
 
 [Authorize]
-public class MessageHub(IMessageRepository messageRepository, UserManager<AppUser> userManager, IMapper mapper):Hub
+public class MessageHub(IMessageRepository messageRepository, UserManager<AppUser> userManager, IMapper mapper,
+    IHubContext<PresenceHub> presenceHub):Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -41,15 +38,21 @@ public class MessageHub(IMessageRepository messageRepository, UserManager<AppUse
 
         var groupName = GetGroupName(sender.PublicId.ToString(), recipient.PublicId.ToString());
         var group = await messageRepository.GetMessageGroup(groupName);
-        if (group != null && group.connections.Any(c => c.UserId == recipient.PublicId.ToString()))
-        {
+        var userInGroup = group != null && group.connections.Any(c => c.UserId == recipient.PublicId.ToString());
+
+        if (userInGroup)
             message.DateRead = DateTime.UtcNow;
-        }
 
         messageRepository.Add(message);
 
         if (await messageRepository.SaveAllAsync())
+        {
             await Clients.Group(groupName).SendAsync("NewMessage", mapper.Map<MessageDto>(message));
+            var connections = await PresenceTracker.GetConnectionsForUser(recipient.PublicId.ToString());
+            if(connections != null && connections.Count>0 &&!userInGroup)
+                await presenceHub.Clients.Clients(connections).SendAsync("NewMessageReceived",
+                    mapper.Map<MessageDto>(userInGroup));
+        }
         
     }
 

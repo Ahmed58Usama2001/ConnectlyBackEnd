@@ -33,7 +33,7 @@ It supports **real-time messaging, user matching, authentication, and photo mana
 
 - 🧱 **Entity Framework Core**
   - Code-First migrations with SQL Server
-  - Repository & Unit of Work pattern
+  - Repository & specifications pattern
   - Clean Architecture with Core, Infrastructure, and API layers
 
 ---
